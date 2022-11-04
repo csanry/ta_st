@@ -252,7 +252,7 @@ def main():
 
                 if sentiment_analysis_choice == "Random Forest":
 
-                    rf = load_rf_model()
+                    rf = load_lr_model()
                     article_transformed = sentiment_preprocessing(input_text=message)
 
                     prediction, tokens = rf.predict_single_review(
@@ -400,6 +400,6 @@ def main():
 
 
 if __name__ == "__main__":
-
+    import_nltk()
     download_large_files()
     main()
