@@ -2,12 +2,11 @@
 # PACKAGES
 # --------
 
-import os
-import shutil
 import time
 from random import Random
 from typing import List, Optional, Tuple
 
+import nltk
 import numpy as np
 import pandas as pd
 import requests
@@ -17,24 +16,37 @@ from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from transformers import DistilBertTokenizerFast
 
-from text_analytics.config import (MODEL_PATH, RAW_DATA_PATH,
-                                   SENTIMENT_CLEANED_DATA_PATH,
-                                   SUMMARISER_CLEANED_DATA_PATH)
-from text_analytics.preprocessing import (convert_abbreviations,
-                                          convert_lowercase, remove_html_tags,
-                                          remove_non_alnum, remove_punctuation,
-                                          remove_stopwords, stemming,
-                                          tokenize_words)
+from text_analytics.config import (
+    MODEL_PATH,
+    RAW_DATA_PATH,
+    SENTIMENT_CLEANED_DATA_PATH,
+    SUMMARISER_CLEANED_DATA_PATH,
+)
+from text_analytics.preprocessing import (
+    convert_abbreviations,
+    convert_lowercase,
+    remove_html_tags,
+    remove_non_alnum,
+    remove_punctuation,
+    remove_stopwords,
+    stemming,
+    tokenize_words,
+)
 from text_analytics.sentiment_analysis.bert_finetuned import (
-    fast_encode, get_sentiment_bert_finetuned)
-from text_analytics.sentiment_analysis.logistic_regression import \
-    LogisticRegressionReviews
+    fast_encode,
+    get_sentiment_bert_finetuned,
+)
+from text_analytics.sentiment_analysis.logistic_regression import (
+    LogisticRegressionReviews,
+)
 from text_analytics.sentiment_analysis.naive_bayes import NaiveBayesReviews
 from text_analytics.sentiment_analysis.random_forest import RandomForestReviews
-from text_analytics.text_summarisation.abs_text_summariser import \
-    AbstractiveTextSummarizer
-from text_analytics.text_summarisation.ext_text_summariser import \
-    ExtractiveTextSummarizer
+from text_analytics.text_summarisation.abs_text_summariser import (
+    AbstractiveTextSummarizer,
+)
+from text_analytics.text_summarisation.ext_text_summariser import (
+    ExtractiveTextSummarizer,
+)
 
 st.set_page_config(layout="wide")
 
@@ -42,6 +54,11 @@ st.set_page_config(layout="wide")
 # -------
 # BACKEND
 # -------
+
+
+def import_nltk():
+    nltk.download("punkt")
+    nltk.download("stopwords")
 
 
 def download_large_files():
@@ -383,5 +400,6 @@ def main():
 
 
 if __name__ == "__main__":
+
     download_large_files()
     main()
