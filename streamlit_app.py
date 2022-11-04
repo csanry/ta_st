@@ -2,48 +2,39 @@
 # PACKAGES
 # --------
 
+import os
+import shutil
 import time
 from random import Random
 from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
 import transformers
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from transformers import DistilBertTokenizerFast
 
-from text_analytics.config import (
-    RAW_DATA_PATH,
-    SENTIMENT_CLEANED_DATA_PATH,
-    SUMMARISER_CLEANED_DATA_PATH,
-)
-from text_analytics.preprocessing import (
-    convert_abbreviations,
-    convert_lowercase,
-    remove_html_tags,
-    remove_non_alnum,
-    remove_punctuation,
-    remove_stopwords,
-    stemming,
-    tokenize_words,
-)
+from text_analytics.config import (MODEL_PATH, RAW_DATA_PATH,
+                                   SENTIMENT_CLEANED_DATA_PATH,
+                                   SUMMARISER_CLEANED_DATA_PATH)
+from text_analytics.preprocessing import (convert_abbreviations,
+                                          convert_lowercase, remove_html_tags,
+                                          remove_non_alnum, remove_punctuation,
+                                          remove_stopwords, stemming,
+                                          tokenize_words)
 from text_analytics.sentiment_analysis.bert_finetuned import (
-    fast_encode,
-    get_sentiment_bert_finetuned,
-)
-from text_analytics.sentiment_analysis.logistic_regression import (
-    LogisticRegressionReviews,
-)
+    fast_encode, get_sentiment_bert_finetuned)
+from text_analytics.sentiment_analysis.logistic_regression import \
+    LogisticRegressionReviews
 from text_analytics.sentiment_analysis.naive_bayes import NaiveBayesReviews
 from text_analytics.sentiment_analysis.random_forest import RandomForestReviews
-from text_analytics.text_summarisation.abs_text_summariser import (
-    AbstractiveTextSummarizer,
-)
-from text_analytics.text_summarisation.ext_text_summariser import (
-    ExtractiveTextSummarizer,
-)
+from text_analytics.text_summarisation.abs_text_summariser import \
+    AbstractiveTextSummarizer
+from text_analytics.text_summarisation.ext_text_summariser import \
+    ExtractiveTextSummarizer
 
 st.set_page_config(layout="wide")
 
@@ -51,6 +42,17 @@ st.set_page_config(layout="wide")
 # -------
 # BACKEND
 # -------
+
+
+def download_large_files():
+
+    rf_data = "https://drive.google.com/file/d/1AIWW245s2cU-3QBmWMEvzz4bpz-pA0oV/view?usp=share_link"
+    rf_path = requests.get(rf_data, allow_redirects=True)
+
+    with open(MODEL_PATH / "random_forest_best.pkl", "wb") as file:
+        file.write(rf_path.content)
+
+    del rf_path
 
 
 @st.cache(ttl=120, show_spinner=False)
@@ -75,11 +77,6 @@ def tokeniser(input_text: str, tokeniser: str) -> str:
         return word_tokenize(input_text)
 
     return sent_tokenize(input_text)
-
-
-@st.cache
-def named_entity_recogniser(input_text: str) -> str:
-    pass
 
 
 @st.cache(show_spinner=False)
@@ -227,7 +224,7 @@ def main():
         st.markdown("#### Perform Sentiment Analysis")
         sentiment_analysis_choice = st.radio(
             "Sentiment Analyser to use",
-            ["Logistic Regression", "Random Forest", "Naive Bayes", "Pre-trained BERT"],
+            ["Logistic Regression", "Random Forest", "Naive Bayes"],
         )
         message = st.text_area(
             "Enter review to perform Sentiment Analysis on", "Text Here", height=200
@@ -386,4 +383,5 @@ def main():
 
 
 if __name__ == "__main__":
+    download_large_files()
     main()
